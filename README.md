@@ -40,20 +40,57 @@ API runs at [http://localhost:3000](http://localhost:3000). The frontend proxies
 
 ## Scripts
 
-| Command         | Description              |
-|-----------------|--------------------------|
-| `npm run dev`   | Start with tsx watch     |
-| `npm run build` | Compile TypeScript       |
-| `npm start`     | Run compiled `dist/`     |
-| `npm run lint`  | Run ESLint               |
+| Command              | Description              |
+|----------------------|--------------------------|
+| `npm run dev`        | Start with tsx watch     |
+| `npm run build`      | Compile TypeScript       |
+| `npm start`          | Run compiled `dist/`     |
+| `npm run lint`       | Run ESLint               |
+| `npm test`           | Run tests                |
+| `npm run test:coverage` | Run tests with coverage |
 
 ## API (current)
 
 | Method | Path               | Description        |
 |--------|--------------------|--------------------|
-| GET    | `/api/health`      | Health check       |
+| GET    | `/api/health`      | Health check (readiness + dependency status) |
+| GET    | `/api/health/ready`| Readiness (same as `/api/health`) |
+| GET    | `/api/health/live` | Liveness (process up; always 200) |
 | GET    | `/api/trust/:address` | Trust score (stub) |
 | GET    | `/api/bond/:address`   | Bond status (stub) |
+
+### Health endpoint (detailed)
+
+The health API reports status per dependency (database, Redis, optional external) without exposing internal details.
+
+- **Readiness** (`GET /api/health` or `GET /api/health/ready`): Returns `200` when all *configured* critical dependencies (DB, Redis) are up; returns `503` if any critical dependency is down. When `DATABASE_URL` or `REDIS_URL` are not set, those dependencies are reported as `not_configured` and do not cause `503`.
+- **Liveness** (`GET /api/health/live`): Returns `200` when the process is running (no dependency checks). Use for Kubernetes/orchestrator liveness probes.
+
+Response shape (readiness):
+
+```json
+{
+  "status": "ok",
+  "service": "credence-backend",
+  "dependencies": {
+    "db": { "status": "up" },
+    "redis": { "status": "up" }
+  }
+}
+```
+
+`status` may be `ok`, `degraded` (optional external down), or `unhealthy` (critical dependency down). Each dependency `status` is `up`, `down`, or `not_configured`. Optional env: `DATABASE_URL`, `REDIS_URL` to enable DB and Redis checks.
+
+### Testing
+
+Health endpoints are covered by unit and route tests. Run:
+
+```bash
+npm test
+npm run test:coverage
+```
+
+Scenarios covered: all dependencies up, DB down (503), Redis down (503), both down (503), only external down (200 degraded), liveness always 200, and no dependencies configured (200 ok).
 
 ## Tech
 
