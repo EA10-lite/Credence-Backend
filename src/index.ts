@@ -1,4 +1,5 @@
 import express from 'express'
+import bulkRouter from './routes/bulk.js'
 
 const app = express()
 const PORT = process.env.PORT ?? 3000
@@ -32,6 +33,14 @@ app.get('/api/bond/:address', (req, res) => {
   })
 })
 
-app.listen(PORT, () => {
-  console.log(`Credence API listening on http://localhost:${PORT}`)
-})
+// Bulk verification endpoint (Enterprise)
+app.use('/api/bulk', bulkRouter)
+
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Credence API listening on http://localhost:${PORT}`)
+  })
+}
+
+export default app

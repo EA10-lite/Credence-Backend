@@ -46,6 +46,9 @@ API runs at [http://localhost:3000](http://localhost:3000). The frontend proxies
 | `npm run build` | Compile TypeScript       |
 | `npm start`     | Run compiled `dist/`     |
 | `npm run lint`  | Run ESLint               |
+| `npm test`      | Run tests                |
+| `npm run test:coverage` | Run tests with coverage |
+| `npm run test:watch` | Run tests in watch mode |
 
 ## API (current)
 
@@ -54,6 +57,19 @@ API runs at [http://localhost:3000](http://localhost:3000). The frontend proxies
 | GET    | `/api/health`      | Health check       |
 | GET    | `/api/trust/:address` | Trust score (stub) |
 | GET    | `/api/bond/:address`   | Bond status (stub) |
+| POST   | `/api/bulk/verify` | Bulk identity verification (Enterprise) |
+
+### Bulk Verification Endpoint
+
+The bulk verification endpoint allows enterprise-tier clients to verify multiple addresses in a single request. See [docs/BULK_VERIFICATION_API.md](docs/BULK_VERIFICATION_API.md) for complete documentation.
+
+**Example:**
+```bash
+curl -X POST http://localhost:3000/api/bulk/verify \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-enterprise-key" \
+  -d '{"addresses": ["GABC...", "GDEF..."]}'
+```
 
 ## Tech
 
