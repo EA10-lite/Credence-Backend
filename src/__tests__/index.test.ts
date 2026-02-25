@@ -6,7 +6,6 @@ describe('API Endpoints', () => {
   describe('GET /api/health', () => {
     it('should return health status', async () => {
       const response = await request(app).get('/api/health')
-
       expect(response.status).toBe(200)
       expect(response.body).toMatchObject({
         status: 'ok',
@@ -20,7 +19,6 @@ describe('API Endpoints', () => {
     it('should return trust score for an address', async () => {
       const address = '0x742d35Cc6634C0532925a3b844Bc454e4438f44e'
       const response = await request(app).get(`/api/trust/${address}`)
-
       expect(response.status).toBe(200)
       expect(response.body).toEqual({
         address,
@@ -34,7 +32,6 @@ describe('API Endpoints', () => {
     it('should handle different addresses', async () => {
       const address = '0x0000000000000000000000000000000000000001'
       const response = await request(app).get(`/api/trust/${address}`)
-
       expect(response.status).toBe(200)
       expect(response.body.address).toBe(address)
     })
@@ -44,7 +41,6 @@ describe('API Endpoints', () => {
     it('should return bond status for an address', async () => {
       const address = '0x742d35Cc6634C0532925a3b844Bc454e4438f44e'
       const response = await request(app).get(`/api/bond/${address}`)
-
       expect(response.status).toBe(200)
       expect(response.body).toEqual({
         address,
@@ -58,7 +54,6 @@ describe('API Endpoints', () => {
     it('should handle different addresses', async () => {
       const address = '0x0000000000000000000000000000000000000001'
       const response = await request(app).get(`/api/bond/${address}`)
-
       expect(response.status).toBe(200)
       expect(response.body.address).toBe(address)
     })
@@ -67,21 +62,18 @@ describe('API Endpoints', () => {
   describe('404 Handling', () => {
     it('should return 404 for unknown routes', async () => {
       const response = await request(app).get('/api/unknown')
-
       expect(response.status).toBe(404)
     })
   })
 })
 
-
-  describe('JSON Parsing', () => {
-    it('should handle valid JSON in request body', async () => {
-      const response = await request(app)
-        .post('/api/bulk/verify')
-        .set('X-API-Key', 'test-enterprise-key-12345')
-        .set('Content-Type', 'application/json')
-        .send(JSON.stringify({ addresses: ['GABC7IXPV3YWQXKQZQXQZQXQZQXQZQXQZQXQZQXQZQXQZQXQZQXQZQXQ'] }))
-
-      expect(response.status).toBe(200)
-    })
+describe('JSON Parsing', () => {
+  it('should handle valid JSON in request body', async () => {
+    const response = await request(app)
+      .post('/api/bulk/verify')
+      .set('X-API-Key', 'test-enterprise-key-12345')
+      .set('Content-Type', 'application/json')
+      .send(JSON.stringify({ addresses: ['0x742d35Cc6634C0532925a3b844Bc454e4438f44e'] }))
+    expect(response.status).toBe(200)
   })
+})
