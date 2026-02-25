@@ -13,10 +13,14 @@ describe('API request validation', () => {
   })
 
   describe('GET /api/health', () => {
-    it('returns 200 without validation', async () => {
+    it('returns 200 with status and dependencies', async () => {
       const res = await request(app).get('/api/health')
       expect(res.status).toBe(200)
-      expect(res.body).toEqual({ status: 'ok', service: 'credence-backend' })
+      expect(res.body).toMatchObject({
+        status: 'ok',
+        service: 'credence-backend',
+      })
+      expect(res.body).toHaveProperty('dependencies')
     })
   })
 

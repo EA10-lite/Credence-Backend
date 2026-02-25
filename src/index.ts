@@ -1,4 +1,6 @@
 import express from 'express'
+import { createHealthRouter } from './routes/health.js'
+import { createDefaultProbes } from './services/health/probes.js'
 import { validate } from './middleware/validate.js'
 import { rateLimit } from './middleware/rateLimit.js'
 import {
@@ -22,10 +24,8 @@ app.use(
   }),
 )
 
-/** Public: health check (no validation) */
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'credence-backend' })
-})
+const healthProbes = createDefaultProbes()
+app.use('/api/health', createHealthRouter(healthProbes))
 
 /** Public: trust score by address (path validation) */
 app.get(

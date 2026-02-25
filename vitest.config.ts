@@ -1,16 +1,26 @@
 import { defineConfig } from 'vitest/config'
-import type { UserConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
+    globals: true,
     environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov'],
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
+      exclude: [
+        'src/**/*.test.ts',
+        'src/**/*.spec.ts',
+        'src/**/__tests__/**',
+        'src/index.ts',
+      ],
+      thresholds: {
+        statements: 95,
+        branches: 85,
+        functions: 95,
+        lines: 95,
+      },
     },
-    globals: true,
   },
-} as UserConfig)
+})
