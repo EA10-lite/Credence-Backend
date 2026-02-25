@@ -1,5 +1,6 @@
 import express from 'express'
 import { validate } from './middleware/validate.js'
+import { rateLimit } from './middleware/rateLimit.js'
 import {
   trustPathParamsSchema,
   bondPathParamsSchema,
@@ -12,6 +13,14 @@ const app = express()
 const PORT = process.env.PORT ?? 3000
 
 app.use(express.json())
+
+/** Rate limit: 100 requests per minute per client (IP or API key); configurable per route. */
+app.use(
+  rateLimit({
+    windowMs: 60_000,
+    maxPerWindow: 100,
+  }),
+)
 
 /** Public: health check (no validation) */
 app.get('/api/health', (_req, res) => {
